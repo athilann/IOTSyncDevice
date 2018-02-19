@@ -44,14 +44,14 @@ namespace ConsoleTest
             dispatcherTimer.Tick += DispatcherTimer_TickAsync;
             dispatcherTimer.Interval = new TimeSpan(0, 1, 0);
             dispatcherTimer.Start();
-           // App.DeviceManager.ConnectToServiceAsync();
+            //App.DeviceManager.ConnectToServiceAsync();
 
         }
         private async void DispatcherTimer_TickAsync(object sender, object e)
         {
             try
             {
-                string filename = DateTime.Now.ToString("ddMMyyyyHHmm") + ".csv";
+                string filename =  "data.csv";
                 var task = App.DataBaseAccess.GetRegistersAsync();
                 task.Wait();
                 List<Registre> result = task.Result;
@@ -61,13 +61,13 @@ namespace ConsoleTest
                 Debug.WriteLine(csv);
 
                 Debug.WriteLine("----------Enviando arquivo: " + filename);
-                using (var dbx = new DropboxClient("*"))
+                using (var dbx = new DropboxClient("x"))
                 {
                     var full = await dbx.Users.GetCurrentAccountAsync();
                     Debug.WriteLine("{0} - {1}", full.Name.DisplayName, full.Email);
                     await Upload(dbx, "/devices/device1/data", filename, csv);
                 }
-                App.DataBaseAccess.RemoveRegisters(result);
+                //App.DataBaseAccess.RemoveRegisters(result);
             }
             catch (Exception ex)
             {
@@ -120,6 +120,10 @@ namespace ConsoleTest
             //else
                 buttonPin.SetDriveMode(GpioPinDriveMode.Input);
 
+            pin = gpio.OpenPin(LED_PIN);
+            pin.SetDriveMode(GpioPinDriveMode.Output);
+            pin.Write(GpioPinValue.Low);
+
             buttonPin.DebounceTimeout = TimeSpan.FromMilliseconds(50);
 
             buttonPin.ValueChanged += buttonPin_ValueChanged;
@@ -128,18 +132,23 @@ namespace ConsoleTest
 
         private void buttonPin_ValueChanged(GpioPin sender, GpioPinValueChangedEventArgs e)
         {
-            if (e.Edge == GpioPinEdge.FallingEdge)
+            if (e.Edge == GpioPinEdge.RisingEdge)
             {
                 Debug.WriteLine("----------Adicionando registro---------");
                 App.DataBaseAccess.AddRegister(new Registre() { RegistreDate = DateTime.Now });
+                pin.Write(GpioPinValue.High);
+            }
+            else
+            {
+                pin.Write(GpioPinValue.Low);
             }
 
             
         }
 
-        private const int BUTTON_PIN = 21;
+        private const int BUTTON_PIN = 4;
         private GpioPin buttonPin;
-
-
+        private GpioPin pin;
+        private int LED_PIN = 17;
     }
 }

@@ -16,7 +16,7 @@ namespace FileSync
             csvString.AppendLine("ID da Leitura, Data da Leitura");
             foreach (Registre registre in registres)
             {
-                csvString.AppendLine(registre.Id+","+registre.RegistreDate.ToString("dd/MM/yyyy HH:mm"));
+                csvString.AppendLine(registre.Id+","+registre.RegistreDate.ToString("dd/MM/yyyy HH:mm:ss"));
             }
             return csvString.ToString();
         }
