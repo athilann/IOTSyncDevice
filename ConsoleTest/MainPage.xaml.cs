@@ -63,8 +63,7 @@ namespace ConsoleTest
                 Debug.WriteLine("----------Enviando arquivo: " + filename);
                 using (var dbx = new DropboxClient("x"))
                 {
-                    var full = await dbx.Users.GetCurrentAccountAsync();
-                    Debug.WriteLine("{0} - {1}", full.Name.DisplayName, full.Email);
+                  
                     await Upload(dbx, "/devices/device1/data", filename, csv);
                 }
                 //App.DataBaseAccess.RemoveRegisters(result);
