@@ -42,7 +42,7 @@ namespace ConsoleTest
             InitGPIO();
             dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += DispatcherTimer_TickAsync;
-            dispatcherTimer.Interval = new TimeSpan(0, 1, 0);
+            dispatcherTimer.Interval = new TimeSpan(0, 10, 0);
             dispatcherTimer.Start();
             //App.DeviceManager.ConnectToServiceAsync();
 
@@ -63,14 +63,15 @@ namespace ConsoleTest
                 Debug.WriteLine("----------Enviando arquivo: " + filename);
                 using (var dbx = new DropboxClient("x"))
                 {
-                  
-                    await Upload(dbx, "/devices/device1/data", filename, csv);
+                    var full = await dbx.Users.GetCurrentAccountAsync();
+                    Debug.WriteLine("{0} - {1}", full.Name.DisplayName, full.Email);
+                    await Upload(dbx, "/Lareso_Biodigestor_01", filename, csv);
                 }
                 //App.DataBaseAccess.RemoveRegisters(result);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Erro: " + ex.Message);
+                Debug.WriteLine("Erro: " + ex.Message);
             }
         }
 
